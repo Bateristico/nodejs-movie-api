@@ -1,0 +1,212 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: MovieAPI
+  description: >-
+    Movie API uses OMDB service to create/read/delete movies in a mongodb
+    database
+  contact:
+    name: Camilo Saa
+    url: https://github.com/bateristico
+    email: camilo.saa@gmail.com
+
+servers:
+  - url: http://localhost:8080
+
+paths:
+  /movies:
+    get:
+      description: Get all the movies previously saved in the database
+      parameters:
+        - name: currentPage
+          in: query
+          description: The page number for the request
+          schema:
+            type: integer
+            minimum: 1
+        - name: perPage
+          in: query
+          description: Number of results per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10
+            example: 2
+      responses:
+        200:
+          description: Successful pull of movies info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Movies fetched successfully
+                  movies:
+                    type: object
+                    $ref: '#/components/schemas/Movie'
+
+    post:
+      description: Creates a movie in the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: matrix
+
+      responses:
+        200:
+          description: Movie successfully saved in the database
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Movie matrix succesfully added to the collection
+
+  /movies/{title}:
+    delete:
+      description: Deletes a movie in the database
+      parameters:
+        - in: path
+          name: title
+          required: true
+          description: the name of the movie that will be deleted
+          schema:
+            type: string
+            example: matrix
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Movie deleted successfully
+
+  /movie/{title}:
+    get:
+      description: Get one movie based on the title
+      parameters:
+        - in: path
+          name: title
+          required: true
+          description: the name of the movie that needs to be returned
+          schema:
+            type: string
+            example: matrix
+
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Movie fetched successfully
+
+                  movie:
+                    type: object
+                    $ref: '#/components/schemas/Movie'
+
+  /auth/login:
+    post:
+      description: uses auth service to authenticate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: premium-jim
+                password:
+                  type: string
+                  example: asda7932krf9
+
+      responses:
+        200:
+          description: jwt token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQzNCwibmFtZSI6IlByZW1pdW0gSmltIiwicm9sZSI6InByZW1pdW0iLCJpYXQiOjE2MTQ4MDU1NTUsImlzcyI6Imh0dHBzOi8vd3d3Lm5asdGd1cnUuY29tLyIsInN1YiI6IjQzNCJ9.ir6cAGdy5-Ouml5o7YCJB5fAhz7LbqOJtymoeJRyEG8
+
+components:
+  schemas:
+    ResponseMessage:
+      description: Model of response message
+      properties:
+        message:
+          type: object
+          properties:
+            message:
+              type: string
+              example: Movie fetched successfully
+            movies:
+              type: object
+              $ref: '#/components/schemas/Movie'
+
+    Movie:
+      description: Model containing movie info
+      properties:
+        movie:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: 603e7a6639ef7c5e40e43f6d
+            title:
+              type: string
+              example: matrix
+            released:
+              type: string
+              example: 01 Mar 1993
+            genre:
+              type: string
+              example: action, drama, fantasy, thriller
+            director:
+              type: string
+              example: n/a
+            creator:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 123
+                name:
+                  type: string
+                  example: Basic Thomas
+                role:
+                  type: string
+                  example: basic
+            createdAt:
+              type: string
+              example: 2021-03-02T17:48:56.326Z
+            updatedAt:
+              type: string
+              example: 2021-03-02T17:48:56.326Z
+            __v:
+              type: integer
+              example: 0
